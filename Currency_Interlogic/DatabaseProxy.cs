@@ -17,6 +17,7 @@ namespace Currency_Interlogic
     public class DatabaseProxy : IObservable
     {
         static DatabaseProxy data = new DatabaseProxy();
+        public int ProgressLoad { get; set; }
 
         public Database database = new Database();
         List<IObserver> observers = new List<IObserver>();
@@ -48,20 +49,27 @@ namespace Currency_Interlogic
 
         DatabaseProxy()
         {
-            loadBase();
+            ProgressLoad = 0;
+            loadBaseAsync();
 
         }
-        async void loadBase()
+        async void loadBaseAsync()
         {
-            database = await Task.Factory.StartNew<Database>((Object i) =>
-            {
-                Database newdata = new Database();
-                newdata.LoadFromBase();
-                return newdata;
-            }, 4);
+            Database newdata = new Database();
+            var progress = new Progress<int>();
+            progress.ProgressChanged += progress_ProgressChanged;
+            await Task.Run(()=>{ newdata.LoadFromBase(progress);});
+            database = newdata;
             NotifyMessengers();
         }
-      
+
+        void progress_ProgressChanged(object sender, int e)
+        {
+            ProgressLoad = e;
+            NotifyMessengers();
+           
+        }
+        
         public void Subscribe(IObserver observ)
         {
             observers.Add(observ);

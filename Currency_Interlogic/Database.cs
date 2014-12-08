@@ -50,7 +50,7 @@ namespace Currency_Interlogic
                 LoadFromXml(Settings.SettingObj.XmlAdress);
             }
         }
-        public void LoadFromBase()
+        public void LoadFromBase(IProgress<int> progress)
         {
 
             currencyEntities newData = new currencyEntities();
@@ -61,8 +61,21 @@ namespace Currency_Interlogic
             {
                 Names = tempNames;
             }
-
-            List<currencies> currenciesTemp = newData.currencies.ToList();
+            progress.Report(10);
+            List<currencies> currenciesTemp = new List<currencies>();
+            int maxNumber = newData.currencies.Count(), index = 0, step = maxNumber / 90, next = step ;
+            foreach(var el in newData.currencies)
+            {
+                currenciesTemp.Add(el);
+                ++index;
+                if(index >= next)
+                {
+                    next += step;
+                    progress.Report(10 + index * 90 / maxNumber);
+                    
+                }
+            }
+            
             lock (currencies)
             {
                 Currencies = currenciesTemp;

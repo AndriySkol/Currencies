@@ -144,8 +144,12 @@ namespace Currency_Interlogic
                 catch (Exception)
                 {
                 }
-                labelDatabaseIsNtReady.Hide();
-
+                if (DatabaseProxy.Data.IsReady)
+                {
+                    labelDatabaseIsNtReady.Hide();
+                    progressBar1.Hide();
+                }
+                progressBar1.Value = DatabaseProxy.Data.ProgressLoad;
                 InitializeChart(name, x1, x2);
                 CreateTable(name, x1, x2);
                 Update();

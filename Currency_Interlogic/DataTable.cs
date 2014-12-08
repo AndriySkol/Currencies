@@ -22,6 +22,7 @@ namespace Currency_Interlogic
             if (DatabaseProxy.Data.IsReady)
             {
                 labelDatabaseIsntReady.Hide();
+                progressBar1.Hide();
             }
 
         }
@@ -75,7 +76,12 @@ namespace Currency_Interlogic
         {
             Invoke((MethodInvoker)delegate
             {
-                labelDatabaseIsntReady.Hide();
+                if (DatabaseProxy.Data.IsReady)
+                {
+                    labelDatabaseIsntReady.Hide();
+                    progressBar1.Hide();
+                }
+                progressBar1.Value = DatabaseProxy.Data.ProgressLoad;
                 CreateTable();
                 Update();
             });
